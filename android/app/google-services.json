@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "55069246572",
+    "project_id": "carenow-kaeyi",
+    "storage_bucket": "carenow-kaeyi.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:55069246572:android:121f10e625e014e4ac4449",
+        "android_client_info": {
+          "package_name": "com.example.care_now"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAbnyqBKcyhRMOdRVOSYMVqDd6rJs2EoCU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
