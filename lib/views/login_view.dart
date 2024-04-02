@@ -1,9 +1,12 @@
 import 'package:care_now/components/input_text_fields.dart';
+import 'package:care_now/extensions/buildcontext/loc.dart';
 import 'package:care_now/services/auth/auth_exception.dart';
-import 'package:care_now/services/auth/auth_service.dart';
+import 'package:care_now/services/auth/bloc/auth_bloc.dart';
+import 'package:care_now/services/auth/bloc/auth_event.dart';
+import 'package:care_now/services/auth/bloc/auth_state.dart';
 import 'package:care_now/utilities/dialogs/error_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:care_now/constants/routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({
@@ -36,7 +39,29 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is AuthStateLoggedOut) {
+          if (state.exception is UserNotFoundAuthException) {
+            await showErrorDialog(
+              context,
+              context.loc.login_error_cannot_find_user,
+            );
+          } else if (state.exception is WrongPasswordAuthException) {
+            await showErrorDialog(
+              context,
+              context.loc.login_error_wrong_credentials,
+            );
+          } else if (state.exception is GenericAuthException) {
+            await showErrorDialog(
+              context,
+              context.loc.login_error_auth_error,
+            );
+          }
+        }
+      },
+    
+    child: Scaffold(
         body: Center(
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const Text('Welcome to',
@@ -73,48 +98,16 @@ class _LoginViewState extends State<LoginView> {
             backgroundColor: Colors.deepPurple,
           ),
           onPressed: () async {
-            final email = _email.text; //mean we go to _email and grab their text tats why .text
-              final password = _password.text;
-              try {
-                // final userCredential =
-                await AuthService.firebase().login(
-                  //await needed cause createUser is a Future thing
-                  email: email,
-                  password: password,
-                );
-                // devtools.log(userCredential.toString());
-                final user = AuthService.firebase().currentUser;
-                if (user?.isEmailVerified ?? false) {
-                  //user email is verified
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    homeRoute,
-                    (route) => false,
-                  );
-                } else {
-                  //user email is not verified
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    verifyEmailRoute,
-                    (route) => false,
-                  );
-                }
-              } on UserNotFoundAuthException {
-                await showErrorDialog(
-                    context,
-                    'User not found',
-                  );
-              } on WrongPasswordAuthException {
-                await showErrorDialog(
-                    context,
-                    'Wrong credentials',
-                  );
-              } on GenericAuthException {
-                await showErrorDialog(
-                    context,
-                    'Authentication error.',
-                  );
-              }
-          },
-          child: const Text('Login'),
+                    final email = _email.text;
+                    final password = _password.text;
+                    context.read<AuthBloc>().add(
+                          AuthEventLogIn(
+                            email,
+                            password,
+                          ),
+                        );
+                  },
+          child: Text(context.loc.login),
         ),
         const SizedBox(
           height: 20,
@@ -122,10 +115,10 @@ class _LoginViewState extends State<LoginView> {
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Colors.white),
           onPressed: () {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                registerRoute,
-                (route) => false);
-          },
+                    context.read<AuthBloc>().add(
+                          const AuthEventShouldRegister(),
+                        );
+                  },
           child: const Text('Create Account',style: TextStyle(
                   color: Colors.deepPurple,
                   fontSize: 16,
@@ -134,17 +127,16 @@ class _LoginViewState extends State<LoginView> {
         TextButton(
           style: TextButton.styleFrom(foregroundColor: Colors.white),
           onPressed: () {
-            // Navigator.of(context).pushNamedAndRemoveUntil(
-            //   registerRoute,
-            //   (route) => false,
-            // );
-          },
+                    context.read<AuthBloc>().add(
+                          const AuthEventForgotPassword(),
+                        );
+                  },
           child: const Text('Forgot Password',style: TextStyle(
                   color: Colors.deepPurple,
                   fontSize: 16,
                 ),),
         ),
       ]),
-    ));
+    )));
   }
 }

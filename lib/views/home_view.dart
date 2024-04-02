@@ -1,7 +1,11 @@
-import 'package:care_now/constants/routes.dart';
-import 'package:care_now/enums/menu_action.dart';
-import 'package:care_now/services/auth/auth_service.dart';
-import 'package:care_now/utilities/dialogs/logout_dialog.dart';
+// import 'package:care_now/constants/routes.dart';
+// import 'package:care_now/enums/menu_action.dart';
+// import 'package:care_now/services/auth/auth_service.dart';
+// import 'package:care_now/utilities/dialogs/logout_dialog.dart';
+import 'package:care_now/views/calendar/schedule_view.dart';
+import 'package:care_now/views/location/location_view.dart';
+import 'package:care_now/views/notes/notes_view.dart';
+import 'package:care_now/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
@@ -12,70 +16,53 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
+  int currentIndex = 0;
+
+  final List<Widget> _children = [
+    const ScheduleView(),
+    const LocationView(),
+    const NotesView(),
+    const ProfileView(),
+  ];
+
+  void onTabTapped(int index) {
+    setState(() {
+      currentIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Schedules'),
-        actions: [
-            IconButton(
-              onPressed: () {
-                // Navigator.of(context).pushNamed(
-                //     createOrUpdateNoteRoute); //use pushNamed cuz it will have back button in the new note view
-              },
-              icon: const Icon(Icons.add),
-            ),
-            PopupMenuButton<MenuAction>(
-              onSelected: (value) async {
-                //print(value); // output in the console will be MenuAction.logout
-                //devtools.log(value.toString()); //output [log]MenuAction.logout
-                switch (value) {
-                  case MenuAction.logout:
-                    final shouldLogout = await showLogoutDialog(context);
-                    if (shouldLogout) {
-                      await AuthService.firebase().logOut();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        loginRoute,
-                        (_) => false,
-                      );
-                    }
-                }
-              },
-              itemBuilder: (context) {
-                return const [
-                  PopupMenuItem<MenuAction>(
-                    value: MenuAction.logout, //wat programmer see
-                    child: Text('Logout'), //wat user see
-                  ),
-                ];
-              },
-            )
-          ],
-        ),
-      body: const Center(),
+      body: Center(
+        child: _children.elementAt(currentIndex), //New
+      ),
       bottomNavigationBar: BottomNavigationBar(
+        onTap: onTabTapped,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Business',
+            icon: Icon(Icons.location_on),
+            label: 'Location',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'School',
+            icon: Icon(Icons.notes),
+            label: 'Details',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: 'School',
+            icon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
-        // currentIndex: _selectedIndex,
+        currentIndex: currentIndex,
         unselectedItemColor: Colors.grey,
+        unselectedLabelStyle: const TextStyle(color: Colors.black),
+        showUnselectedLabels: true,
         selectedItemColor: Colors.deepPurple,
-        // onTap: _onItemTapped,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
       ),
     );
   }

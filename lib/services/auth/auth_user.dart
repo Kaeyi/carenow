@@ -1,15 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' show User;
 import 'package:flutter/foundation.dart';
 
-@immutable //any subclasses of this class need to be immutable, they cannot have any fields tat change
+@immutable
 class AuthUser {
-  final String? email;
+  final String id;
+  final String email;
   final bool isEmailVerified;
   const AuthUser({
+    required this.id,
     required this.email,
     required this.isEmailVerified,
   });
 
-  factory AuthUser.fromFirebase(User user) =>
-      AuthUser(email: user.email!, isEmailVerified: user.emailVerified,);
+  factory AuthUser.fromFirebase(User user) => AuthUser(
+        id: user.uid,
+        email: user.email!,
+        isEmailVerified: user.emailVerified,
+      );
 }
