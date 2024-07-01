@@ -8,18 +8,44 @@ import 'package:care_now/extensions/buildcontext/loc.dart';
 import 'package:care_now/services/auth/bloc/auth_bloc.dart';
 import 'package:care_now/services/auth/bloc/auth_event.dart';
 import 'package:care_now/utilities/dialogs/logout_dialog.dart';
+import 'package:care_now/views/profile/edit_profile_view.dart';
+import 'package:care_now/views/profile/elderlies_list_view.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ProfileView extends StatefulWidget {
-  const ProfileView({super.key});
+
+  const ProfileView({super.key, });
 
   @override
   State<ProfileView> createState() => _ProfileViewState();
 }
 
 class _ProfileViewState extends State<ProfileView> {
+
+  String? _username;
+
+  @override
+  void initState(){
+    super.initState();
+    _fetchUsername();
+  }
+
+  Future<void> _fetchUsername() async{
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId != null) {
+      final userData = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+    final username = userData.get('username');
+    print('Username from Firestore: $username');
+    setState(() {
+      _username = username;
+    });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,10 +94,10 @@ class _ProfileViewState extends State<ProfileView> {
             const SizedBox(height: 20.0),
 
             // Text to display username
-            const Text(
+            Text(
               // userName,
-              'John Doe',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              _username ?? '',
+              style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             ),
 
             const SizedBox(height: 10.0),
@@ -82,6 +108,14 @@ class _ProfileViewState extends State<ProfileView> {
               leading: const Icon(Icons.edit),
               onTap: () {
                 // Handle edit profile action
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const EditProfileView(
+                        
+                      ),
+                    ),
+                  );
               },
             ),
 
@@ -94,6 +128,26 @@ class _ProfileViewState extends State<ProfileView> {
               leading: const Icon(Icons.settings),
               onTap: () {
                 // Handle settings action
+              },
+            ),
+
+            // Divider
+            const Divider(),
+
+            // Another setting option row
+            ListTile(
+              title: const Text('Elderlies'),
+              leading: const Icon(Icons.elderly),
+              onTap: () {
+                // Handle settings action
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ElderlyListView(
+                        
+                      ),
+                    ),
+                  );
               },
             ),
           ],

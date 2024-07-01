@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>GOOGLE_MAPS_API_KEY</key>
+    <string>AIzaSyAtyKB0894lT6BbBixjoLHui39rrEKYJ9I</string>
+	<key>NSLocalNotificationUsageDescription</key>
+	<string>We use local notifications to remind you about tasks.</string>
 </dict>
 </plist>

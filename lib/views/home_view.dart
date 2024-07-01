@@ -2,14 +2,16 @@
 // import 'package:care_now/enums/menu_action.dart';
 // import 'package:care_now/services/auth/auth_service.dart';
 // import 'package:care_now/utilities/dialogs/logout_dialog.dart';
+// import 'package:care_now/views/calendar/schedule_task_notification.dart';
 import 'package:care_now/views/calendar/schedule_view.dart';
 import 'package:care_now/views/location/location_view.dart';
-import 'package:care_now/views/notes/notes_view.dart';
+// import 'package:care_now/views/meal/meal_planner_view.dart';
 import 'package:care_now/views/profile/profile_view.dart';
 import 'package:flutter/material.dart';
 
 class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+
+  const HomeView({super.key, });
 
   @override
   State<HomeView> createState() => _HomeViewState();
@@ -21,7 +23,6 @@ class _HomeViewState extends State<HomeView> {
   final List<Widget> _children = [
     const ScheduleView(),
     const LocationView(),
-    const NotesView(),
     const ProfileView(),
   ];
 
@@ -47,10 +48,6 @@ class _HomeViewState extends State<HomeView> {
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
             label: 'Location',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notes),
-            label: 'Details',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

@@ -1,3 +1,4 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:care_now/firebase_options.dart';
 import 'package:care_now/services/auth/auth_user.dart';
@@ -21,13 +22,16 @@ class FirebaseAuthProvider implements AuthProvider {
     required String password,
   }) async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final authResult =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      final user = currentUser;
+      final user = authResult.user;
       if (user != null) {
-        return user;
+        // If username is provided, save it to Firestore
+        
+        return AuthUser.fromFirebase(user);
       } else {
         throw UserNotLoggedInAuthException();
       }
@@ -45,6 +49,8 @@ class FirebaseAuthProvider implements AuthProvider {
       throw GenericAuthException();
     }
   }
+
+
 
   @override
   AuthUser? get currentUser {

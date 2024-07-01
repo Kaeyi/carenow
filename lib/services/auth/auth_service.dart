@@ -12,10 +12,12 @@ class AuthService implements AuthProvider {
   Future<AuthUser> createUser({
     required String email,
     required String password,
+    String? username,
   }) =>
       provider.createUser(
         email: email,
         password: password,
+
       );
 
   @override
@@ -44,3 +46,4 @@ class AuthService implements AuthProvider {
   Future<void> sendPasswordReset({required String toEmail}) =>
       provider.sendPasswordReset(toEmail: toEmail);
 }
+
